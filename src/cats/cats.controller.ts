@@ -14,13 +14,23 @@ import { UserActiveInterface } from 'src/common/interfaces/user-active.interface
 import { CatsService } from './cats.service';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
+import { ApiBearerAuth, ApiCreatedResponse, ApiForbiddenResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 
+@ApiUnauthorizedResponse({
+  description: 'Unauthorized Bearer Auth',
+})
+@ApiTags('cats')
 @Auth(Role.USER)
+@ApiBearerAuth()
 @Controller('cats')
 export class CatsController {
   constructor(private readonly catsService: CatsService) {}
 
   @Post()
+  @ApiCreatedResponse({
+    description: 'The record has been successfully created.',
+  })
+  @ApiForbiddenResponse({ description: 'Forbidden.' })
   create(@Body() createCatDto: CreateCatDto, @ActiveUser() user: UserActiveInterface) {
     return this.catsService.create(createCatDto, user);
   }
